@@ -69,7 +69,6 @@ function analyzeSalesData(data, options) {
 
     //
     // @TODO: Индексация продавцов и товаров для быстрого доступа
-    // const sellerIndex = Object.fromEntries(sellerStats.map(item => [item.seller_id, item]));
     const sellerIndex = sellerStats.reduce((result, item) => {
         const id = item.seller_id;
         if (!result[id]) result[id] = item;
@@ -78,12 +77,6 @@ function analyzeSalesData(data, options) {
 
     console.log('sellerIndex', sellerIndex);
 
-    // const productIndex = data.products.reduce((result, item) => {
-    //     const sku = item.sku;
-    //     if (!result[sku]) result[sku] = [];
-    //     result[sku].push(item);
-    //     return result;
-    // }, {});
     const productIndex = data.products.reduce((result, item) => {
         const sku = item.sku;
         if (!result[sku]) result[sku] = item;
@@ -98,7 +91,6 @@ function analyzeSalesData(data, options) {
         // Обработка каждого товара в чеке
         record.items.forEach(item => {
             const product = productIndex[item.sku];
-            // console.log(product);
 
             // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
@@ -114,21 +106,18 @@ function analyzeSalesData(data, options) {
                 seller.products_sold[item.sku] = 0;
             }
             seller.products_sold[item.sku] += item.quantity;
-            // console.log(seller.products_sold)
         })
     });
-    //
+
     // @TODO: Сортировка продавцов по прибыли
     const sortedSellers = Object.values(sellerIndex).sort((min, max) => max.profit - min.profit);
-    //
+
     // @TODO: Назначение премий на основе ранжирования
     sortedSellers.forEach((seller, index) => {
         seller.bonus = calculateBonus(index, sortedSellers.length, seller);
     })
-    // console.log(sortedSellers);
 
 
-    //
     // @TODO: Подготовка итоговой коллекции с нужными полями
     return sortedSellers.map((seller, index) => {
         const top_products = Object.entries(seller)
