@@ -98,7 +98,7 @@ function analyzeSalesData(data, options) {
         // Обработка каждого товара в чеке
         record.items.forEach(item => {
             const product = productIndex[item.sku];
-            console.log(product);
+            // console.log(product);
 
             // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
@@ -114,7 +114,7 @@ function analyzeSalesData(data, options) {
                 seller.products_sold[item.sku] = 0;
             }
             seller.products_sold[item.sku] += item.quantity;
-            console.log(seller.products_sold)
+            // console.log(seller.products_sold)
         })
     });
     //
@@ -125,7 +125,7 @@ function analyzeSalesData(data, options) {
     sortedSellers.forEach((seller, index) => {
         seller.bonus = calculateBonus(index, sortedSellers.length, seller);
     })
-    console.log(sortedSellers);
+    // console.log(sortedSellers);
 
 
     //
