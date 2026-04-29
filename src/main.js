@@ -75,8 +75,6 @@ function analyzeSalesData(data, options) {
         return result;
     }, {});
 
-    console.log('sellerIndex', sellerIndex);
-
     const productIndex = data.products.reduce((result, item) => {
         const sku = item.sku;
         if (!result[sku]) result[sku] = item;
