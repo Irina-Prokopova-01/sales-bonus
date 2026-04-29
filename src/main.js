@@ -65,7 +65,7 @@ function analyzeSalesData(data, options) {
     ) {
         throw new Error("Некорректные опции");
     }
-    //
+
     // @TODO: Подготовка промежуточных данных для сбора статистики
     const sellerStats = data.sellers.map(seller => ({
         seller_id: seller.id,
@@ -101,7 +101,6 @@ function analyzeSalesData(data, options) {
         // Обработка каждого товара в чеке
         record.items.forEach(item => {
             const product = productIndex[item.sku];
-            console.log(product);
             // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
             // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
