@@ -65,7 +65,6 @@ function analyzeSalesData(data, options) {
         products_sold: 0,
     }));
 
-    console.log(sellerStats);
 
     //
     // @TODO: Индексация продавцов и товаров для быстрого доступа
