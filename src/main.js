@@ -30,7 +30,7 @@ function calculateBonusByProfit(index, total, seller) {
     } else if( index === total - 1) {
         bonusRate = 0;
     } else {
-        bonusRate = 0.5;
+        bonusRate = 0.05;
     }
 
     return profit * bonusRate;
@@ -44,14 +44,26 @@ function calculateBonusByProfit(index, total, seller) {
  */
 function analyzeSalesData(data, options) {
     // @TODO: Проверка входных данных
-    if (!Array.isArray(data.sellers || data.products || data.purchase_records || data.customers) || data.sellers.length === 0) {
-        throw new Error('Некорректные входные данные');
+    if (
+        !data ||
+        !Array.isArray(data.sellers) ||
+        !Array.isArray(data.products) ||
+        !Array.isArray(data.purchase_records) ||
+        data.sellers.length === 0 ||
+        data.products.length === 0 ||
+        data.purchase_records.length === 0
+    ) {
+        throw new Error("Некорректные входные данные");
     }
     // @TODO: Проверка наличия опций
     // return 'Данные корректные'
     const { calculateRevenue, calculateBonus } = options;
-    if (!typeof options === "object" || !typeof calculateRevenue === "function") {
-        throw new Error(`${options} не объект или ${calculateRevenue} не функция`);
+    if (
+        typeof options !== "object" ||
+        typeof calculateRevenue !== "function" ||
+        typeof calculateBonus !== "function"
+    ) {
+        throw new Error("Некорректные опции");
     }
     //
     // @TODO: Подготовка промежуточных данных для сбора статистики
@@ -66,7 +78,6 @@ function analyzeSalesData(data, options) {
     }));
 
 
-    //
     // @TODO: Индексация продавцов и товаров для быстрого доступа
     const sellerIndex = sellerStats.reduce((result, item) => {
         const id = item.seller_id;
@@ -74,21 +85,23 @@ function analyzeSalesData(data, options) {
         return result;
     }, {});
 
+
     const productIndex = data.products.reduce((result, item) => {
         const sku = item.sku;
         if (!result[sku]) result[sku] = item;
         return result;
     }, {});
-    //
+
+
     // @TODO: Расчет выручки и прибыли для каждого продавца
     data.purchase_records.forEach(record => { // Чек
-        // const seller = sellerIndex[record.seller_id]; // Продавец
-        const seller = sellerIndex[record.seller_id]; // Продавец
+        // const seller = sellerIndex[record.seller_id];
+        const seller = sellerIndex[record.seller_id];
         seller.sales_count ++
         // Обработка каждого товара в чеке
         record.items.forEach(item => {
             const product = productIndex[item.sku];
-
+            console.log(product);
             // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
             // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
