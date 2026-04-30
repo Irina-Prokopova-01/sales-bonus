@@ -25,10 +25,10 @@ function calculateBonusByProfit(index, total, seller) {
     let bonusRate = 0
     if (index === 0) {
         bonusRate = 0.15;
-    } else if (index === 1 || index === 2) {
-        bonusRate = 0.1;
     } else if( index === total - 1) {
         bonusRate = 0;
+    } else if (index === 1 || index === 2) {
+        bonusRate = 0.1;
     } else {
         bonusRate = 0.05;
     }
@@ -74,7 +74,7 @@ function analyzeSalesData(data, options) {
         revenue: 0,
         profit: 0,
         bonus: 0,
-        products_sold: 0,
+        products_sold: {},
     }));
 
 
@@ -100,14 +100,15 @@ function analyzeSalesData(data, options) {
         seller.sales_count ++
         // Обработка каждого товара в чеке
         record.items.forEach(item => {
+            // const product = data.products.find(p => p.sku === item.sku);
             const product = productIndex[item.sku];
             // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
             // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
-            const revenue_item = calculateSimpleRevenue(item)
+            const revenue_item = calculateSimpleRevenue(item, product)
             // Посчитать прибыль: выручка минус себестоимость
             const profit = revenue_item - cost;
-            seller.revenue += revenue_item;
+            seller.revenue += Number(revenue_item.toFixed(2));
             seller.profit += profit;
 
             // Увеличить общую накопленную прибыль у продавца
@@ -129,10 +130,10 @@ function analyzeSalesData(data, options) {
 
     // @TODO: Подготовка итоговой коллекции с нужными полями
     return sortedSellers.map((seller, index) => {
-        const top_products = Object.entries(seller)
+        const top_products = Object.entries(seller.products_sold)
             .sort((min, max) => max[1] - min[1])
             .slice(0, 10)
-            .map(([SKU, quantity]) => SKU)
+            .map(([sku, quantity]) => ({ sku, quantity }))
 
         delete seller.products_sold
 
